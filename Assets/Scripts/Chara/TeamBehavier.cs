@@ -108,7 +108,12 @@ public class TeamBehavier : MonoBehaviour
         switch (newState)
         {
             case TeamState.InVillage:
-                foreach (var c in memberList) c.transform.SetParent(GameManager.GetCharaContainer().transform);
+                foreach (var c in memberList)
+                {
+                    c.transform.SetParent(GameManager.GetCharaContainer().transform);
+                    c.SetInVillage();
+                }
+
                 agent.enabled = false;
                 break;
             case TeamState.Advanture:

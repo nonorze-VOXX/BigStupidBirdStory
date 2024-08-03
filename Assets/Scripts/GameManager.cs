@@ -1,4 +1,5 @@
 // #define TEAM
+
 #define BUILDING
 
 #define TEST
@@ -18,7 +19,6 @@ namespace DefaultNamespace
         [SerializeField] private CharaBehaviour charaBehaviourPrefab;
         [SerializeField] private TeamBehavier teamBehavierPrefab;
         [SerializeField] private EnemyBehaviour enemyBehaviourPrefab;
-        private GameObject buildingContainer;
         private GameObject enemyBehavierContainer;
         private EnemySpawnManage enemySpawnManage;
         private IInput input;
@@ -43,8 +43,6 @@ namespace DefaultNamespace
             if (surface2D != null)
                 surface2D = GameObject.Find("MapContainer/MapNavMesh").GetComponent<NavMeshSurface>();
             mountainHole = GameObject.Find("MapContainer/MountainHole");
-            buildingContainer = GameObject.Find("BuildingContainer");
-            if (buildingContainer == null) buildingContainer = new GameObject("BuildingContainer");
             charaBehavierContainer = GameObject.Find("CharaBehavierContainer");
             if (charaBehavierContainer == null) charaBehavierContainer = new GameObject("CharaBehavierContainer");
             teamBehavierContainer = GameObject.Find("TeamBehavierContainer");

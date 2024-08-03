@@ -14,6 +14,7 @@ internal enum CharaInVillageState
 {
     Idle,
     GoToUnity,
+    Tradeing,
 
     Prepared
     // dalan todo: do more state in village
@@ -40,14 +41,9 @@ public class CharaBehaviour : MonoBehaviour
     [SerializeField] private CharaInTeamState inTeamState;
     [SerializeField] private CharaInVillageState inVillageState;
     [SerializeField] private CharaState state;
-
-
     public NavMeshAgent agent;
-
-    public Transform trans;
-
-
     public TeamBehavier team;
+    [SerializeField] private Trade trade;
     public Dictionary<Item, int> bag = new();
     private bool isAllowAttack = true;
 
@@ -163,7 +159,8 @@ public class CharaBehaviour : MonoBehaviour
         switch (inVillageState)
         {
             case CharaInVillageState.Idle:
-                var isPrepared = Math.Abs(charaData.hp.now - charaData.hp.max) < 0.1;
+                var isHealth = Math.Abs(charaData.hp.now - charaData.hp.max) < 0.1;
+                var isPrepared = isHealth;
                 if (isPrepared)
                     SetInViilageState(CharaInVillageState.GoToUnity);
                 break;
@@ -172,6 +169,19 @@ public class CharaBehaviour : MonoBehaviour
                     SetInViilageState(CharaInVillageState.Prepared);
                 break;
             case CharaInVillageState.Prepared:
+                break;
+            case CharaInVillageState.Tradeing:
+                var wantTrade = bag.Count == 0; // todo: check if chara want to trade
+                if (!wantTrade)
+                {
+                    SetState(CharaInTeamState.Idle);
+                }
+                else
+                {
+                    SetWalkTo(trade.transform.position); // todo: walk to trade position
+                    if (Vector2.Distance(trade.transform.position, transform.position) < 1.0f) trade.CharaIn(this);
+                }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -190,6 +200,10 @@ public class CharaBehaviour : MonoBehaviour
             case CharaInVillageState.Prepared:
                 SetState(CharaState.InTeam);
                 break;
+            case CharaInVillageState.Tradeing:
+                var m = BuildingAreaManager.GetInstance();
+                trade = m.GetTrade();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
@@ -203,7 +217,7 @@ public class CharaBehaviour : MonoBehaviour
         {
             case CharaState.InVillage:
                 agent.enabled = true;
-                SetInViilageState(CharaInVillageState.Idle);
+                SetInViilageState(CharaInVillageState.Tradeing);
                 break;
             case CharaState.InTeam:
                 agent.enabled = false;
@@ -293,5 +307,10 @@ public class CharaBehaviour : MonoBehaviour
             var pos = enemyPosition + (position - enemyPosition).normalized * charaData.battleData.range;
             SetWalkTo(pos);
         }
+    }
+
+    public void SetInVillage()
+    {
+        SetState(CharaState.InVillage);
     }
 }
